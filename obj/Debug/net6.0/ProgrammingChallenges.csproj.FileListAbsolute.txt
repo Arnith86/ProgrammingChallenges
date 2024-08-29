@@ -1,0 +1,15 @@
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\obj\Debug\net6.0\ProgrammingChallenges.csproj.AssemblyReference.cache
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\obj\Debug\net6.0\ProgrammingChallenges.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\obj\Debug\net6.0\ProgrammingChallenges.AssemblyInfoInputs.cache
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\obj\Debug\net6.0\ProgrammingChallenges.AssemblyInfo.cs
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\obj\Debug\net6.0\ProgrammingChallenges.csproj.CoreCompileInputs.cache
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\bin\Debug\net6.0\ProgrammingChallenges.exe
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\bin\Debug\net6.0\ProgrammingChallenges.deps.json
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\bin\Debug\net6.0\ProgrammingChallenges.runtimeconfig.json
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\bin\Debug\net6.0\ProgrammingChallenges.dll
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\bin\Debug\net6.0\ProgrammingChallenges.pdb
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\obj\Debug\net6.0\ProgrammingChallenges.dll
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\obj\Debug\net6.0\refint\ProgrammingChallenges.dll
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\obj\Debug\net6.0\ProgrammingChallenges.pdb
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\obj\Debug\net6.0\ProgrammingChallenges.genruntimeconfig.cache
+C:\Users\Arnit\Documents\GitHub\ProgrammingChallenges\ProgrammingChallenges\obj\Debug\net6.0\ref\ProgrammingChallenges.dll
