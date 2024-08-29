@@ -16,4 +16,7 @@ My solutions to varius programming challanges and problems.
 | [Innacuret GPS](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Inaccurate%20GPS) | C# | Solves example input |
 Original version did not solve the problem completely, this is a revised version. I can however not performe the test as those were time limited.
 
-##
+## Advent Of Code
+| Problem | Languages | Completion | :link: |
+|-|-|-|-|
+| [Air Duct Spelunking](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Air%20Duct%20Spelunking) | C# | In Progress | [To Problem](https://adventofcode.com/2016/day/24) |
