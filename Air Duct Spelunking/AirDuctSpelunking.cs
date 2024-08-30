@@ -5,6 +5,9 @@ namespace AirDuctSpelunking;
 
 public class AirDuctSpelunking
 {
+	int matrixRows = 0;
+	int matrixColumns = 0;
+
 	public AirDuctSpelunking()
 	{
 		start();
@@ -12,54 +15,92 @@ public class AirDuctSpelunking
 
 	private char[][] readInput()
 	{
-		int row = 0;
-		int column = 0;
+		char[][] map = null;
 
-		char[][] map = new char[42][];
-		char[] mapRow = null;
-
-		int inputSize = -1;
-		string line;
-
-		try
+		// First loop, registers the size of the matrix
+		// Second loop, regesters the values of the matrix 
+		for (int i = 0; i < 2; i++)
 		{
-			//Pass the file path and file name to the StreamReader constructor
-			StreamReader sr = new StreamReader("AirDuctSpelunking_Input.txt");
-			//Read the first line of text
-			line = sr.ReadLine();
+			int row = 0;
+			int column = 0;
+			bool columnSet = false;
 
-			//Continue to read until you reach end of file
-			while (line != null)
+			char[] mapRow = null;
+
+			int inputSize = -1;
+			string line;
+
+			try
 			{
-				//Read the next line
+				row = 0;
+				//Pass the file path and file name to the StreamReader constructor
+				StreamReader sr = new StreamReader("AirDuctSpelunking_Input.txt");
+				//Read the first line of text
 				line = sr.ReadLine();
 
-				// Keeps track of how long the rows will be 
-				if (inputSize == -1)
+				//Continue to read until you reach end of file
+				while (line != null)
 				{
-					inputSize = line.Count();
+					//Read the next line
+					line = sr.ReadLine();
+
+					// Keeps track of how long the rows will be 
+					if (inputSize == -1)
+					{
+						this.matrixColumns = line.Count();
+					}
+
+					// Only creates the row array on second loop
+					if (i == 1)
+					{
+						mapRow = new char[this.matrixColumns];
+					}
+
+					// Fills the row array with char values, but only in second loop.
+					foreach (char charInString in line)
+					{
+						if (i == 1)
+						{
+							mapRow[column] = charInString;
+							column++;
+						} 
+						//else
+						//{
+						//	if (columnSet == false) {
+						//		this.matrixColumns++;
+						//	}
+						//}
+
+						//columnSet = true;
+					}
+
+					if (i == 1)
+					{
+						map[row] = mapRow;
+						row++;
+					} 
+					else
+					{
+						this.matrixRows++;
+					}
+										
+					// Resets the column counter for next row
+					column = 0;
 				}
-
-				mapRow = new char[inputSize];
-
-				// Fills the map row array with char values
-				foreach (char charInString in line)
-				{
-					mapRow[column] = charInString;
-					column++;
-				}
-
-				map[row] = mapRow;
-				row++;
-				// Resets the column counter for next row
-				column = 0;
+				//close the file
+				sr.Close();
 			}
-			//close the file
-			sr.Close();
-		}
-		catch (Exception e)
-		{
-			Console.WriteLine("Exception: " + e.Message);
+			catch (Exception e)
+			{
+				Console.WriteLine("Exception: " + e.Message);
+				
+			} finally {
+				// creates the map md-array with the expected number of columns
+				if (i == 0)
+				{
+					map = new char[this.matrixRows][];
+				}
+			}
 		}
 
 		return map;
