@@ -8,6 +8,8 @@ public class AirDuctSpelunking
 	int matrixRows = 0;
 	int matrixColumns = 0;
 
+	Queue<string> bfsQueue = new Queue<string>();
+
 	public AirDuctSpelunking()
 	{
 		start();
@@ -19,89 +21,66 @@ public class AirDuctSpelunking
 
 		// First loop, registers the size of the matrix
 		// Second loop, regesters the values of the matrix 
-		for (int i = 0; i < 2; i++)
+		
+		int row = 0;
+		int column = 0;
+		bool columnSet = false;
+
+		char[] mapRow = null;
+
+		int inputSize = -1;
+		string line;
+
+		try
 		{
-			int row = 0;
-			int column = 0;
-			bool columnSet = false;
+			//Pass the file path and file name to the StreamReader constructor
+			StreamReader sr = new StreamReader("AirDuctSpelunking_Input.txt");
+			
+			// Minus one to account for counting starting at 1
+			this.matrixRows = (File.ReadLines("AirDuctSpelunking_Input.txt").Count() - 1);
 
-			char[] mapRow = null;
+			Console.WriteLine(this.matrixRows);
+			// creates the map md-array with the expected number of columns
+			map = new char[this.matrixRows][];
 
-			int inputSize = -1;
-			string line;
+			//Read the first line of text
+			line = sr.ReadLine();
 
-			try
+			//Continue to read until you reach end of file
+			while (line != null)
 			{
-				row = 0;
-				//Pass the file path and file name to the StreamReader constructor
-				StreamReader sr = new StreamReader("AirDuctSpelunking_Input.txt");
-				//Read the first line of text
+				//Read the next line
 				line = sr.ReadLine();
 
-				//Continue to read until you reach end of file
-				while (line != null)
+				// Keeps track of how long the rows will be 
+				if (inputSize == -1)
 				{
-					//Read the next line
-					line = sr.ReadLine();
-
-					// Keeps track of how long the rows will be 
-					if (inputSize == -1)
-					{
-						this.matrixColumns = line.Count();
-					}
-
-					// Only creates the row array on second loop
-					if (i == 1)
-					{
-						mapRow = new char[this.matrixColumns];
-					}
-
-					// Fills the row array with char values, but only in second loop.
-					foreach (char charInString in line)
-					{
-						if (i == 1)
-						{
-							mapRow[column] = charInString;
-							column++;
-						} 
-						//else
-						//{
-						//	if (columnSet == false) {
-						//		this.matrixColumns++;
-						//	}
-						//}
-
-						//columnSet = true;
-					}
-
-					if (i == 1)
-					{
-						map[row] = mapRow;
-						row++;
-					} 
-					else
-					{
-						this.matrixRows++;
-					}
-										
-					// Resets the column counter for next row
-					column = 0;
+					this.matrixColumns = line.Count();
 				}
-				//close the file
-				sr.Close();
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine("Exception: " + e.Message);
+
+				// Only creates the row array on second loop
+				mapRow = new char[this.matrixColumns];
 				
-			} finally {
-				// creates the map md-array with the expected number of columns
-				if (i == 0)
+				// Fills the row array with char values, but only in second loop.
+				foreach (char charInString in line)
 				{
-					map = new char[this.matrixRows][];
+					mapRow[column] = charInString;
+					column++;
 				}
+
+				map[row] = mapRow;
+				row++;		
+				
+				// Resets the column counter for next row
+				column = 0;
 			}
+			//close the file
+			sr.Close();
 		}
+		catch (Exception e)
+		{
+			Console.WriteLine("Exception: " + e.Message);	
+		} 
 
 		return map;
 	}
@@ -112,15 +91,8 @@ public class AirDuctSpelunking
 		string input;
 
 		char[][] map = readInput();
-		Dictionary<int, string> mustVisit = new Dictionary<int, string>();
+		Dictionary<int, Node> mustVisit = new Dictionary<int, Node>();
 
-		// int i = 0;
-		//Console.WriteLine(map.Count());
-		//foreach (char[] test in map)
-		//{
-		//	Console.WriteLine(i);
-		//	i++;
-		//}
 
 		int width = 0;
 		int hight = 0;
@@ -144,18 +116,35 @@ public class AirDuctSpelunking
 				{
 					// Converts the nodes char value to an int, and use it as key that stores coordinants
 					int key = int.Parse(map[row][column].ToString());
-					mustVisit.Add(key, row+","+column);
+
+					mustVisit.Add(key, new Node(key, row, column));
 				}
 			}
 		}
 
-		//foreach (KeyValuePair<int, string> item in mustVisit)
-		//{
-		//	string[] temp = item.Value.Split(","); 
-		//	int rowIndex = int.Parse(temp[0]);
-		//	int columnIndex = int.Parse(temp[1]);
+		foreach (KeyValuePair<int, Node> item in mustVisit)
+		{
+			//string[] temp = item.Value.Split(",");
+			//int rowIndex = int.Parse(temp[0]);
+			//int columnIndex = int.Parse(temp[1]);
 
-		//	Console.WriteLine("key: "+item.Key+" row index: "+rowIndex+" column index: "+columnIndex);
-		//}
+			Console.WriteLine("key: " + item.Key + " row index: " + item.Value.Row + " column index: " + item.Value.Column);
+		}
+	}
+}
+
+public class Node
+{
+	public int NodeNr { get; set; }
+	public int Row { get; set; }
+	public int Column { get; set; }
+
+	public Dictionary<int, int> LengthToNextNode { get; set; }
+
+	public Node(int nodeNr, int row, int column) 
+	{ 
+		NodeNr = nodeNr;
+		Row = row;
+		Column = column;
 	}
 }
