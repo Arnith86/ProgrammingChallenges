@@ -7,8 +7,13 @@ public class AirDuctSpelunking
 {
 	int matrixRows = 0;
 	int matrixColumns = 0;
+	char[][] map = null;
 
-	Queue<string> bfsQueue = new Queue<string>();
+	//Queue<string> bfsQueue = new Queue<string>();
+	Queue<int[]> bfsQueue = new Queue<int[]>();
+	//List<int[]> bfsVisited = new List<int[]>();
+	Dictionary<int, List<int>> bfsVisited = new Dictionary<int, List<int>>();
+	List<int[]> nodeToNodeDistance = new List<int[]>();
 
 	public AirDuctSpelunking()
 	{
@@ -90,9 +95,8 @@ public class AirDuctSpelunking
 	{
 		string input;
 
-		char[][] map = readInput();
+		/*char[][]*/this.map = readInput();
 		Dictionary<int, Node> mustVisit = new Dictionary<int, Node>();
-
 
 		int width = 0;
 		int hight = 0;
@@ -122,15 +126,128 @@ public class AirDuctSpelunking
 			}
 		}
 
+		int nrMustVisit = mustVisit.Count();
+		Node[] mustVisitNodes = new Node[nrMustVisit];
+
+		// Converts the Dictionery to an array for ease of access of specific nodes
 		foreach (KeyValuePair<int, Node> item in mustVisit)
 		{
-			//string[] temp = item.Value.Split(",");
-			//int rowIndex = int.Parse(temp[0]);
-			//int columnIndex = int.Parse(temp[1]);
-
-			Console.WriteLine("key: " + item.Key + " row index: " + item.Value.Row + " column index: " + item.Value.Column);
+			mustVisitNodes[item.Key] = item.Value;
 		}
+
+		for (int i = 0; i < nrMustVisit; i++)
+		{
+			Console.WriteLine("key: " + mustVisitNodes[i].NodeNr + " row index: " + mustVisitNodes[i].Row + " column index: " + mustVisitNodes[i].Column);
+		}
+
+		bfsVisited.Add(mustVisitNodes[0].Row,  new List<int> {mustVisitNodes[0].Column});
+
+		spelunkingBFS(mustVisitNodes[0].Row, mustVisitNodes[0].Column);
 	}
+
+	// Find the distance between nodes
+	// Recursion moves in all four directions 
+	private void spelunkingBFS(int row, int column, int step = 0, string movedInDirection = "")
+	{
+		string currChar = "";
+
+		if (step != 0) {
+
+			bool keyFound = false;
+			
+			// Check if we have visited this coordinant, exits if we have.
+			foreach (KeyValuePair<int, List<int>> kvp in bfsVisited)
+			{
+				if (kvp.Key == row)
+				{
+					keyFound= true;
+
+					foreach (int co in kvp.Value)
+					{
+						if (co == column)
+						{
+							//Console.WriteLine("Already visited: r: " + row + " c:" + column);
+							return;
+						}
+					}
+					break;
+				}
+			}
+
+			if (!keyFound)
+			{
+				bfsVisited.Add(row, new List<int>(column));
+			}
+			else
+			{ 
+				bfsVisited[row].Add(column); 
+			}
+		}
+
+		
+		//if (bfsVisited.ContainsKey(row))
+		//{
+		//	foreach (var item in collection)
+		//	{
+
+		//	}
+		//	if ()
+		//}
+
+		// End current branch of recursion, outside of map border.
+		if ((row == -1 || column == -1) || (row == this.matrixRows || column == this.matrixColumns))
+		{
+			return;
+		} 
+		else // Get the value of current position.
+		{
+			currChar = map[row][column].ToString();
+		}		
+
+		// End recursion branch, wall was hit.
+		if (currChar.Equals("#"))
+		{
+			//Console.WriteLine("#");
+			return; 
+		}
+
+		if (!currChar.Equals(".") && step != 0)
+		{
+			Console.WriteLine("We have reached a node" + currChar);
+			return; 
+		}
+
+
+		step++;
+		//Console.WriteLine(movedInDirection);
+		// Moves in specified direction, with the exception of the direction it came from
+		if (!movedInDirection.Equals("upp"))
+		{
+			// Moves down 
+			spelunkingBFS(row + 1, column, step, "down");
+		}
+		
+		if (!movedInDirection.Equals("down"))
+		{	// Moves upp
+			spelunkingBFS(row - 1, column, step, "upp");
+		}
+		
+		if (!movedInDirection.Equals("right"))
+		{
+			// Moves left
+			spelunkingBFS(row, column - 1, step, "left");
+		}
+		
+		if (!movedInDirection.Equals("left"))
+		{	
+			// Moves right
+			spelunkingBFS(row, column + 1, step, "right");
+		}
+
+		//Console.WriteLine("END!");
+		return;
+	}
+
 }
 
 public class Node
@@ -139,7 +256,7 @@ public class Node
 	public int Row { get; set; }
 	public int Column { get; set; }
 
-	public Dictionary<int, int> LengthToNextNode { get; set; }
+	public Dictionary<int, int> LengthToNeighbor { get; set; }
 
 	public Node(int nodeNr, int row, int column) 
 	{ 
