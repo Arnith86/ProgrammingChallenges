@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 
 namespace AirDuctSpelunking;
 
@@ -8,12 +9,13 @@ public class AirDuctSpelunking
 	int matrixRows = 0;
 	int matrixColumns = 0;
 	char[][] map = null;
+	bool[,] visited = null;
+	int[,] adjacencyMatrix = null;
 
-	//Queue<string> bfsQueue = new Queue<string>();
-	Queue<int[]> bfsQueue = new Queue<int[]>();
-	//List<int[]> bfsVisited = new List<int[]>();
-	Dictionary<int, List<int>> bfsVisited = new Dictionary<int, List<int>>();
-	List<int[]> nodeToNodeDistance = new List<int[]>();
+	Queue<int[]> dfsQueue = new Queue<int[]>();
+	Dictionary<int, List<int>> dfsVisited = new Dictionary<int, List<int>>();
+
+	Node[] mustVisitNodes;
 
 	public AirDuctSpelunking()
 	{
@@ -24,9 +26,6 @@ public class AirDuctSpelunking
 	{
 		char[][] map = null;
 
-		// First loop, registers the size of the matrix
-		// Second loop, regesters the values of the matrix 
-		
 		int row = 0;
 		int column = 0;
 		bool columnSet = false;
@@ -40,19 +39,18 @@ public class AirDuctSpelunking
 		{
 			//Pass the file path and file name to the StreamReader constructor
 			StreamReader sr = new StreamReader("AirDuctSpelunking_Input.txt");
-			
-			// Minus one to account for counting starting at 1
-			this.matrixRows = (File.ReadLines("AirDuctSpelunking_Input.txt").Count() - 1);
+			this.matrixRows = (File.ReadLines("AirDuctSpelunking_Input.txt").Count());
 
 			Console.WriteLine(this.matrixRows);
 			// creates the map md-array with the expected number of columns
 			map = new char[this.matrixRows][];
 
-			//Read the first line of text
-			line = sr.ReadLine();
+			////Read the first line of text
+			//line = sr.ReadLine();
 
 			//Continue to read until you reach end of file
-			while (line != null)
+
+			for (int i = 0; i < this.matrixRows+1; i++)
 			{
 				//Read the next line
 				line = sr.ReadLine();
@@ -95,21 +93,11 @@ public class AirDuctSpelunking
 	{
 		string input;
 
-		/*char[][]*/this.map = readInput();
+		this.map = readInput();
 		Dictionary<int, Node> mustVisit = new Dictionary<int, Node>();
 
-		int width = 0;
-		int hight = 0;
-
-		// Finds and sets the hight and width of the map matrix
-		foreach (char[] row in map)
-		{
-			if (hight == 0)
-			{
-				foreach (char column in row){	width++;	}
-			}
-			hight++;
-		}
+		int width = this.matrixColumns;
+		int hight = this.matrixRows;
 
 		// Finds the nodes that must be visited
 		for (int row = 0; row < hight; row++)
@@ -127,7 +115,7 @@ public class AirDuctSpelunking
 		}
 
 		int nrMustVisit = mustVisit.Count();
-		Node[] mustVisitNodes = new Node[nrMustVisit];
+		this.mustVisitNodes = new Node[nrMustVisit];
 
 		// Converts the Dictionery to an array for ease of access of specific nodes
 		foreach (KeyValuePair<int, Node> item in mustVisit)
@@ -135,116 +123,178 @@ public class AirDuctSpelunking
 			mustVisitNodes[item.Key] = item.Value;
 		}
 
+
+		// Initiates the matrix of bools used to keep track of visited cells
+		visited = new bool[this.matrixRows, this.matrixColumns];
+
+		// Perform a DFS for each node seperatly
 		for (int i = 0; i < nrMustVisit; i++)
 		{
-			Console.WriteLine("key: " + mustVisitNodes[i].NodeNr + " row index: " + mustVisitNodes[i].Row + " column index: " + mustVisitNodes[i].Column);
-		}
-
-		bfsVisited.Add(mustVisitNodes[0].Row,  new List<int> {mustVisitNodes[0].Column});
-
-		spelunkingBFS(mustVisitNodes[0].Row, mustVisitNodes[0].Column);
-	}
-
-	// Find the distance between nodes
-	// Recursion moves in all four directions 
-	private void spelunkingBFS(int row, int column, int step = 0, string movedInDirection = "")
-	{
-		string currChar = "";
-
-		if (step != 0) {
-
-			bool keyFound = false;
-			
-			// Check if we have visited this coordinant, exits if we have.
-			foreach (KeyValuePair<int, List<int>> kvp in bfsVisited)
+			// Resets the matrix
+			for (int j = 0; j < this.matrixRows; j++)
 			{
-				if (kvp.Key == row)
+				for (int k = 0; k < this.matrixColumns; k++)
 				{
-					keyFound= true;
-
-					foreach (int co in kvp.Value)
-					{
-						if (co == column)
-						{
-							//Console.WriteLine("Already visited: r: " + row + " c:" + column);
-							return;
-						}
-					}
-					break;
+					visited[j, k] = false;
 				}
 			}
 
-			if (!keyFound)
+			Console.WriteLine("key: " + mustVisitNodes[i].NodeNr + " row index: " + mustVisitNodes[i].Row + " column index: " + mustVisitNodes[i].Column);
+				
+			spelunkingDFS(i, mustVisitNodes[i].Row, mustVisitNodes[i].Column);		
+		}
+
+		// Creates an adjacency matrix from the data registered in the nodes
+		this.adjacencyMatrix = new int[nrMustVisit, nrMustVisit];
+
+		foreach (Node node in this.mustVisitNodes)
+		{
+			foreach (KeyValuePair<int, int> kvp in node.LengthToNeighbor)
 			{
-				bfsVisited.Add(row, new List<int>(column));
-			}
-			else
-			{ 
-				bfsVisited[row].Add(column); 
+				adjacencyMatrix[node.NodeNr, kvp.Key] = kvp.Value;
 			}
 		}
 
+		// Find shortest path from start node to all other nodes using dijkstras algorithm
+		primsAlgorithm(0, nrMustVisit);
 		
-		//if (bfsVisited.ContainsKey(row))
-		//{
-		//	foreach (var item in collection)
-		//	{
+		Console.WriteLine("hihi");
+	}
 
-		//	}
-		//	if ()
-		//}
+	// Find shortest path from start node to reach all other nodes using prims algorithm
+	private void primsAlgorithm(int startNode,  int nrOfVertices)
+	{
+		// Array that will contain the created minimal spanning tree.
+		int[] parent = new int[nrOfVertices];
 
-		// End current branch of recursion, outside of map border.
-		if ((row == -1 || column == -1) || (row == this.matrixRows || column == this.matrixColumns))
+		// Values used to pick the minimal weighted edge 
+		int[] key = new int[nrOfVertices];
+
+		bool[] mstSet = new bool[nrOfVertices];
+
+		// Represents the set of currently added vertices in the MST 
+		for (int i = 0; i < nrOfVertices; i++)
+		{
+			key[i] = int.MaxValue;
+			mstSet[i] = false;
+		}
+
+		// Sets the start node (root) of MST
+		key[startNode] = 0;
+		parent[startNode] = -1;
+		
+		for (int i = 0; i < nrOfVertices ; i++)
+		{
+			// Picks the vertice with lowes distance not yet included in MST
+			int pickedVertice = minKey(key, mstSet);
+
+			// Set the picked vertice as true (now part of tree)
+			mstSet[pickedVertice] = true;
+
+			//int nrOfConectedNodes = this.mustVisitNodes[pickedVertice].LengthToNeighbor.Count;
+
+			// Updating key values and parent indexes of adjacent vertices of picked vertex.
+			// We skip the ones that already are part of the MST
+			for (int j = 0; j < nrOfVertices; j++)
+			{
+
+				if (mstSet[j] == false &&                                               // Has not been visited yet
+					this.adjacencyMatrix[pickedVertice, j] != 0 &&                      // Is a connection to node
+					this.adjacencyMatrix[pickedVertice, j] < key[j])					// Has a lower distance then the current distance
+				{
+					parent[j] = pickedVertice;
+					key[j] = this.adjacencyMatrix[pickedVertice, j]; 
+				}
+			}
+		}
+		printMST(parent, adjacencyMatrix, nrOfVertices);
+		Console.WriteLine("HAHIO");
+	}
+
+	static void printMST(int[] parent, int[,] graph, int V)
+	{
+		Console.WriteLine("Edge \tWeight");
+		for (int i = 1; i < V; i++)
+			Console.WriteLine(parent[i] + " - " + i + "\t"
+							  + graph[i, parent[i]]);
+	}
+
+	// Finding the vertice with lowest distance, not yet included in mstSet
+	private int minKey(int[] key, bool[] mstSet)
+	{
+		int arraySize = key.Length;
+
+		// Set min to highest possible value
+		int min = int.MaxValue;
+		int min_index = -1;
+
+		for (int i = 0; i < arraySize; i++)
+		{
+			if (mstSet[i] == false && key[i] < min)
+			{
+				min = key[i];
+				min_index = i;
+			}
+		}
+
+		return min_index;
+	}
+
+	
+
+	// Find the distance between nodes
+	// Recursion moves in all four directions 
+	private void spelunkingDFS(int startNode, int row, int column, int step = 0, string movedInDirection = "")
+	{
+		string currChar = "";
+		
+		// Check if we have visited this coordinant, exits if we have.
+		if (this.visited[row, column] == true)
 		{
 			return;
-		} 
-		else // Get the value of current position.
+		}
+		// Else Regesters that the node now has been visited
+		else
+		{
+			this.visited[row, column] = true;
+		}
+
+		// End current branch of recursion, outside of map border or wall was hit.
+		if (row < 0 || column < 0 || row == this.matrixRows || column == this.matrixColumns || currChar.Equals("#"))
+		{
+			return;
+		}
+		else
 		{
 			currChar = map[row][column].ToString();
-		}		
+			
+			if (currChar.Equals("#"))
+			{
+				return;
+			}
+		} 	
 
-		// End recursion branch, wall was hit.
-		if (currChar.Equals("#"))
-		{
-			//Console.WriteLine("#");
-			return; 
-		}
 
 		if (!currChar.Equals(".") && step != 0)
 		{
-			Console.WriteLine("We have reached a node" + currChar);
-			return; 
+			Console.WriteLine("startnode "+ startNode +" reached node " + currChar + " steps taken: "+step);
+			if (!mustVisitNodes[startNode].LengthToNeighbor.ContainsKey(int.Parse(currChar)))
+			{
+				this.mustVisitNodes[startNode].LengthToNeighbor.Add(int.Parse(currChar), step);
+				this.mustVisitNodes[int.Parse(currChar)].LengthToNeighbor.Add(startNode, step);
+			}
+		
+			return;
 		}
-
 
 		step++;
-		//Console.WriteLine(movedInDirection);
+					
 		// Moves in specified direction, with the exception of the direction it came from
-		if (!movedInDirection.Equals("upp"))
-		{
-			// Moves down 
-			spelunkingBFS(row + 1, column, step, "down");
-		}
-		
-		if (!movedInDirection.Equals("down"))
-		{	// Moves upp
-			spelunkingBFS(row - 1, column, step, "upp");
-		}
-		
-		if (!movedInDirection.Equals("right"))
-		{
-			// Moves left
-			spelunkingBFS(row, column - 1, step, "left");
-		}
-		
-		if (!movedInDirection.Equals("left"))
-		{	
-			// Moves right
-			spelunkingBFS(row, column + 1, step, "right");
-		}
-
-		//Console.WriteLine("END!");
+		spelunkingDFS(startNode, row + 1, column, step, "down");
+		spelunkingDFS(startNode, row - 1, column, step, "upp");
+		spelunkingDFS(startNode, row, column - 1, step, "left");
+		spelunkingDFS(startNode, row, column + 1, step, "right");
+	
 		return;
 	}
 
@@ -263,5 +313,6 @@ public class Node
 		NodeNr = nodeNr;
 		Row = row;
 		Column = column;
+		LengthToNeighbor = new Dictionary<int, int>();
 	}
 }
