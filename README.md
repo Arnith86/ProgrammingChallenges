@@ -9,12 +9,14 @@ My solutions to varius programming challanges and problems.
 | [Äpplen och päron](https://github.com/Arnith86/ProgrammingChallenges/tree/main/%C3%84pplen%20och%20p%C3%A4ron) | C# | Solved | [To Problem](https://po.kattis.com/problems/applenparon) |
 
 ## Aptitude test
-| Problem | Languages | Completion | 
-|-|-|-|
-| [Unique Cities](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Unique%20Cities) | C# | Solved | 
-| [Annoying Coworker](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Annoying%20Coworker) | C# | Solved |
-| [Innacuret GPS](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Inaccurate%20GPS) | C# | Solves example input |
+| Problem | Languages | Completion | difficulty |
+|-|-|-|-|
+| [Unique Cities](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Unique%20Cities) | C# | Solved | Easy |
+| [Annoying Coworker](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Annoying%20Coworker) | C# | Solved | Medium |
+| [Innacuret GPS](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Inaccurate%20GPS) | C# | Solves example input | Medium |
 Original version did not solve the problem completely, this is a revised version. I can however not performe the test as those were time limited.
+| [Bishop Traversal](https://github.com/Arnith86/ProgrammingChallenges/tree/main/BishopTraversal) | C# | Solved | Medium |   
+| [Negative Temprature](https://github.com/Arnith86/ProgrammingChallenges/tree/main/NegativeTemprature) | C# | Solved | Easy |
 
 ## Advent Of Code
 | Problem | Languages | Completion | :link: |
