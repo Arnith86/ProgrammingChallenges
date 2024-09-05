@@ -32,16 +32,18 @@ namespace ProgrammingChallenges.ChessTraversal
 		moves will be accepted. Remember that in a chess move one chessman (the bishop in this case) has to
 		change his position to be a valid move (i.e. two consecutive positions in the output must differ).
 	  
-	 	Expected output:
-	    Impossible
-	    2 F1 B 5 E 8
-	    0 A 3
-
-		Sample input: 
+	 	Sample input: 
 	    3
 	    E 2 E 3
 	    F 1 E 8
 	    A 3 A 3
+		
+		Expected output:
+	    Impossible
+	    2 F1 B 5 E 8
+	    0 A 3
+
+		
 
 		first input: 
 	    n : number of test cases

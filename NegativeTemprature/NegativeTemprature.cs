@@ -53,10 +53,10 @@ namespace ProgrammingChallenges.NegativeTemprature
 	{
 		public NegativeTemprature()
 		{
-			start();
+			//start();
 		}
 
-		private void start()
+		public void start()
 		{
 			string input;
 			bool firstInputReceived = false;
