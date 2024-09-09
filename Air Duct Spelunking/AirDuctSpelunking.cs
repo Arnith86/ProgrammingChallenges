@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 using System.IO;
 using System.Reflection;
 
@@ -11,6 +12,14 @@ public class AirDuctSpelunking
 	char[][] map = null;
 	bool[,] visited = null;
 	int[,] adjacencyMatrix = null;
+
+	int[,] direction = new int[,]
+	{
+		{  1,  0 },  // down
+		{ -1,  0 },  // upp
+		{  0, -1 },	 // left
+		{  0,  1 }   // right
+	};
 
 	Queue<int[]> dfsQueue = new Queue<int[]>();
 	Dictionary<int, List<int>> dfsVisited = new Dictionary<int, List<int>>();
@@ -38,18 +47,14 @@ public class AirDuctSpelunking
 		try
 		{
 			//Pass the file path and file name to the StreamReader constructor
-			StreamReader sr = new StreamReader("AirDuctSpelunking_Input.txt");
-			this.matrixRows = (File.ReadLines("AirDuctSpelunking_Input.txt").Count());
+			StreamReader sr = new StreamReader("AirDuctSpelunking_Input3.txt");
+			this.matrixRows = (File.ReadLines("AirDuctSpelunking_Input3.txt").Count());
 
-			Console.WriteLine(this.matrixRows);
 			// creates the map md-array with the expected number of columns
 			map = new char[this.matrixRows][];
 
-			////Read the first line of text
-			//line = sr.ReadLine();
 
 			//Continue to read until you reach end of file
-
 			for (int i = 0; i < this.matrixRows+1; i++)
 			{
 				//Read the next line
@@ -211,6 +216,8 @@ public class AirDuctSpelunking
 		Console.WriteLine("HAHIO");
 	}
 
+
+	// THIS IS ONLY HERE FOR TESTING REASONS 
 	static void printMST(int[] parent, int[,] graph, int V)
 	{
 		Console.WriteLine("Edge \tWeight");
@@ -242,62 +249,61 @@ public class AirDuctSpelunking
 
 	
 
-	// Find the distance between nodes
+	// A depth first search to find the shortest distance between nodes
 	// Recursion moves in all four directions 
-	private void spelunkingDFS(int startNode, int row, int column, int step = 0, string movedInDirection = "")
+	// TODO: make sure that ONLY THE SHORTEST distance is keept
+	private void spelunkingDFS(int startNode, int row, int column, int step = 0/*, string movedInDirection = ""*/)
 	{
 		string currChar = "";
-		
-		// Check if we have visited this coordinant, exits if we have.
-		if (this.visited[row, column] == true)
-		{
-			return;
-		}
-		// Else Regesters that the node now has been visited
-		else
-		{
-			this.visited[row, column] = true;
-		}
 
-		// End current branch of recursion, outside of map border or wall was hit.
-		if (row < 0 || column < 0 || row == this.matrixRows || column == this.matrixColumns || currChar.Equals("#"))
-		{
-			return;
-		}
-		else
-		{
-			currChar = map[row][column].ToString();
-			
-			if (currChar.Equals("#"))
-			{
-				return;
-			}
-		} 	
+		this.visited[row, column] = true;  
 
+		currChar = map[row][column].ToString();
 
+		//TODO!!! THIS PART OF THE CODE SHOULD ONLY REGISTER IF THE DISTANCE IS LOWER THEN PREVIEUS DISTANCE!!!
 		if (!currChar.Equals(".") && step != 0)
 		{
 			Console.WriteLine("startnode "+ startNode +" reached node " + currChar + " steps taken: "+step);
 			if (!mustVisitNodes[startNode].LengthToNeighbor.ContainsKey(int.Parse(currChar)))
 			{
 				this.mustVisitNodes[startNode].LengthToNeighbor.Add(int.Parse(currChar), step);
-				this.mustVisitNodes[int.Parse(currChar)].LengthToNeighbor.Add(startNode, step);
+				this.visited[row, column] = false;
 			}
-		
-			return;
+			
+			if (step < mustVisitNodes[startNode].LengthToNeighbor[int.Parse(currChar)])
+			{
+				this.mustVisitNodes[startNode].LengthToNeighbor[int.Parse(currChar)] = step;
+			}
+
+			return; 
 		}
 
 		step++;
-					
-		// Moves in specified direction, with the exception of the direction it came from
-		spelunkingDFS(startNode, row + 1, column, step, "down");
-		spelunkingDFS(startNode, row - 1, column, step, "upp");
-		spelunkingDFS(startNode, row, column - 1, step, "left");
-		spelunkingDFS(startNode, row, column + 1, step, "right");
-	
-		return;
-	}
 
+		// Moves in specified direction, with the exception of the direction it came from
+		for (int i = 0; i < 4; i++)
+		{
+			// Has the cell already been visted?
+			if (this.visited[row + direction[i, 0], column + direction[i, 1]] == true)
+			{
+				continue;
+			}
+
+			string nextChar = map[row + direction[i, 0]][column + direction[i, 1]].ToString();
+
+			// Is next step outside map boundaries or a wall?
+			if ((row + direction[i, 0]) < 0		||
+				(column + direction[i, 1]) < 0	||
+				(row + direction[i, 0]) == this.matrixRows ||
+				(column + direction[i, 1] == this.matrixColumns || 
+				nextChar.Equals("#")))
+			{
+				continue;
+			}
+
+			spelunkingDFS(startNode, row + direction[i, 0], column + direction[i, 1], step);
+		}
+	}
 }
 
 public class Node
