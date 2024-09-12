@@ -5,6 +5,14 @@ using System.Reflection;
 
 namespace AirDuctSpelunking;
 
+/**	
+ * To solve this problem, we first use BFS to gather the shortest distance from every node to all other nodes.
+ * With that data, we create a weighted adjacency matrix. To find the shortest path from the start node to every other node,
+ * we use a dynamic programming approach to solve the traveling salesman problem, with the caveat that we don't return to the start node. 
+ * A bitmask is used to keep track of the visited nodes.
+ **/
+
+
 public class AirDuctSpelunking
 {
 	int matrixRows = 0;
@@ -13,6 +21,8 @@ public class AirDuctSpelunking
 	bool[,] visited = null;
 	int[,] adjacencyMatrix = null;
 
+	int FINAL_STATE = 0;
+	
 	int[,] direction = new int[,]
 	{
 		{  1,  0 },  // down
@@ -21,8 +31,8 @@ public class AirDuctSpelunking
 		{  0,  1 }   // right
 	};
 
-	Queue<int[]> dfsQueue = new Queue<int[]>();
-	Dictionary<int, List<int>> dfsVisited = new Dictionary<int, List<int>>();
+	Queue<int[]> bfsQueue = new Queue<int[]>();
+	Dictionary<int, List<int>> bfsVisited = new Dictionary<int, List<int>>();
 
 	Node[] mustVisitNodes;
 
@@ -31,6 +41,8 @@ public class AirDuctSpelunking
 		start();
 	}
 
+
+	// Reads the input
 	private char[][] readInput()
 	{
 		char[][] map = null;
@@ -47,8 +59,8 @@ public class AirDuctSpelunking
 		try
 		{
 			//Pass the file path and file name to the StreamReader constructor
-			StreamReader sr = new StreamReader("AirDuctSpelunking_Input3.txt");
-			this.matrixRows = (File.ReadLines("AirDuctSpelunking_Input3.txt").Count());
+			StreamReader sr = new StreamReader("AirDuctSpelunking_Input.txt");
+			this.matrixRows = (File.ReadLines("AirDuctSpelunking_Input.txt").Count());
 
 			// creates the map md-array with the expected number of columns
 			map = new char[this.matrixRows][];
@@ -61,10 +73,7 @@ public class AirDuctSpelunking
 				line = sr.ReadLine();
 
 				// Keeps track of how long the rows will be 
-				if (inputSize == -1)
-				{
-					this.matrixColumns = line.Count();
-				}
+				if (inputSize == -1) this.matrixColumns = line.Count();
 
 				// Only creates the row array on second loop
 				mapRow = new char[this.matrixColumns];
@@ -79,8 +88,7 @@ public class AirDuctSpelunking
 				map[row] = mapRow;
 				row++;		
 				
-				// Resets the column counter for next row
-				column = 0;
+				column = 0;  // Resets the column counter for next row
 			}
 			//close the file
 			sr.Close();
@@ -98,6 +106,7 @@ public class AirDuctSpelunking
 	{
 		string input;
 
+		// Gather input
 		this.map = readInput();
 		Dictionary<int, Node> mustVisit = new Dictionary<int, Node>();
 
@@ -113,7 +122,6 @@ public class AirDuctSpelunking
 				{
 					// Converts the nodes char value to an int, and use it as key that stores coordinants
 					int key = int.Parse(map[row][column].ToString());
-
 					mustVisit.Add(key, new Node(key, row, column));
 				}
 			}
@@ -128,11 +136,11 @@ public class AirDuctSpelunking
 			mustVisitNodes[item.Key] = item.Value;
 		}
 
-
 		// Initiates the matrix of bools used to keep track of visited cells
 		visited = new bool[this.matrixRows, this.matrixColumns];
 
-		// Perform a DFS for each node seperatly
+
+		// Perform a BFS for each node seperatly
 		for (int i = 0; i < nrMustVisit; i++)
 		{
 			// Resets the matrix
@@ -145,8 +153,67 @@ public class AirDuctSpelunking
 			}
 
 			Console.WriteLine("key: " + mustVisitNodes[i].NodeNr + " row index: " + mustVisitNodes[i].Row + " column index: " + mustVisitNodes[i].Column);
+		
+			// A bredth first search to find the shortest distance between nodes
+			// moves in all four directions 
+			string currChar = "";
+			int step = 0;
+
+			// Enqueues the start node
+			this.bfsQueue.Enqueue(new int[] { mustVisitNodes[i].Row, mustVisitNodes[i].Column, step});
+
+			int startNode = mustVisitNodes[i].NodeNr;
+			
+
+			while (true)
+			{
+				if (!(bfsQueue.Count > 0))	break;
+
+				int[] positionInformation = bfsQueue.Dequeue();
+				int row = positionInformation[0];
+				int column = positionInformation[1];
+				int currentSteps = positionInformation[2];
+				currChar = map[row][column].ToString();
 				
-			spelunkingDFS(i, mustVisitNodes[i].Row, mustVisitNodes[i].Column);		
+				// Regesters the shortest distance to a node from the start node
+				if (!currChar.Equals(".") && currentSteps != 0)
+				{
+					Console.WriteLine("startnode " + startNode + " reached node " + currChar + " steps taken: " + currentSteps);
+					if (!mustVisitNodes[startNode].LengthToNeighbor.ContainsKey(int.Parse(currChar)))
+					{
+						this.mustVisitNodes[startNode].LengthToNeighbor.Add(int.Parse(currChar), currentSteps);
+					}
+
+					if (currentSteps < mustVisitNodes[startNode].LengthToNeighbor[int.Parse(currChar)])
+					{
+						this.mustVisitNodes[startNode].LengthToNeighbor[int.Parse(currChar)] = currentSteps;
+					}
+
+					continue;
+				}
+
+				// Moves in specified direction, with the exception of the direction it came from
+				for (int j = 0; j < 4; j++)
+				{
+					int nextRow = row + direction[j, 0];
+					int nextColum = column + direction[j, 1];
+
+					// Has the cell already been visted?
+					if (this.visited[nextRow, nextColum] == true) continue;
+
+					string nextChar = map[nextRow][nextColum].ToString();
+
+					// Is next step outside map boundaries or a wall?
+					if (nextRow < 0 || nextColum < 0 ||	nextRow == this.matrixRows || nextColum == this.matrixColumns ||nextChar.Equals("#"))
+					{
+						continue;
+					}
+
+					// Expands search
+					bfsQueue.Enqueue(new int[] { nextRow, nextColum, (currentSteps + 1) });
+					this.visited[nextRow, nextColum] = true;
+				}
+			}
 		}
 
 		// Creates an adjacency matrix from the data registered in the nodes
@@ -161,148 +228,97 @@ public class AirDuctSpelunking
 		}
 
 		// Find shortest path from start node to all other nodes using dijkstras algorithm
-		primsAlgorithm(0, nrMustVisit);
+		int result = dynamicProgramingSolveTSP(nrMustVisit);
+
+		Console.WriteLine($"Shortest path distance: {result}");
+	}
+
+
+	/**---------------------------------------------------------------------------------------------
 		
-		Console.WriteLine("hihi");
-	}
-
-	// Find shortest path from start node to reach all other nodes using prims algorithm
-	private void primsAlgorithm(int startNode,  int nrOfVertices)
-	{
-		// Array that will contain the created minimal spanning tree.
-		int[] parent = new int[nrOfVertices];
-
-		// Values used to pick the minimal weighted edge 
-		int[] key = new int[nrOfVertices];
-
-		bool[] mstSet = new bool[nrOfVertices];
-
-		// Represents the set of currently added vertices in the MST 
-		for (int i = 0; i < nrOfVertices; i++)
-		{
-			key[i] = int.MaxValue;
-			mstSet[i] = false;
-		}
-
-		// Sets the start node (root) of MST
-		key[startNode] = 0;
-		parent[startNode] = -1;
-		
-		for (int i = 0; i < nrOfVertices ; i++)
-		{
-			// Picks the vertice with lowes distance not yet included in MST
-			int pickedVertice = minKey(key, mstSet);
-
-			// Set the picked vertice as true (now part of tree)
-			mstSet[pickedVertice] = true;
-
-			//int nrOfConectedNodes = this.mustVisitNodes[pickedVertice].LengthToNeighbor.Count;
-
-			// Updating key values and parent indexes of adjacent vertices of picked vertex.
-			// We skip the ones that already are part of the MST
-			for (int j = 0; j < nrOfVertices; j++)
-			{
-
-				if (mstSet[j] == false &&                                               // Has not been visited yet
-					this.adjacencyMatrix[pickedVertice, j] != 0 &&                      // Is a connection to node
-					this.adjacencyMatrix[pickedVertice, j] < key[j])					// Has a lower distance then the current distance
-				{
-					parent[j] = pickedVertice;
-					key[j] = this.adjacencyMatrix[pickedVertice, j]; 
-				}
-			}
-		}
-		printMST(parent, adjacencyMatrix, nrOfVertices);
-		Console.WriteLine("HAHIO");
-	}
-
-
-	// THIS IS ONLY HERE FOR TESTING REASONS 
-	static void printMST(int[] parent, int[,] graph, int V)
-	{
-		Console.WriteLine("Edge \tWeight");
-		for (int i = 1; i < V; i++)
-			Console.WriteLine(parent[i] + " - " + i + "\t"
-							  + graph[i, parent[i]]);
-	}
-
-	// Finding the vertice with lowest distance, not yet included in mstSet
-	private int minKey(int[] key, bool[] mstSet)
-	{
-		int arraySize = key.Length;
-
-		// Set min to highest possible value
-		int min = int.MaxValue;
-		int min_index = -1;
-
-		for (int i = 0; i < arraySize; i++)
-		{
-			if (mstSet[i] == false && key[i] < min)
-			{
-				min = key[i];
-				min_index = i;
-			}
-		}
-
-		return min_index;
-	}
-
-	
-
-	// A depth first search to find the shortest distance between nodes
-	// Recursion moves in all four directions 
-	// TODO: make sure that ONLY THE SHORTEST distance is keept
-	private void spelunkingDFS(int startNode, int row, int column, int step = 0/*, string movedInDirection = ""*/)
-	{
-		string currChar = "";
-
-		this.visited[row, column] = true;  
-
-		currChar = map[row][column].ToString();
-
-		//TODO!!! THIS PART OF THE CODE SHOULD ONLY REGISTER IF THE DISTANCE IS LOWER THEN PREVIEUS DISTANCE!!!
-		if (!currChar.Equals(".") && step != 0)
-		{
-			Console.WriteLine("startnode "+ startNode +" reached node " + currChar + " steps taken: "+step);
-			if (!mustVisitNodes[startNode].LengthToNeighbor.ContainsKey(int.Parse(currChar)))
-			{
-				this.mustVisitNodes[startNode].LengthToNeighbor.Add(int.Parse(currChar), step);
-				this.visited[row, column] = false;
-			}
+		The finished state is when the finished state mask has all bits set to 1
+		(meaning all the nodes have been visited). maybe? :S
 			
-			if (step < mustVisitNodes[startNode].LengthToNeighbor[int.Parse(currChar)])
-			{
-				this.mustVisitNodes[startNode].LengthToNeighbor[int.Parse(currChar)] = step;
-			}
+		Example:
+		If N = 4: (where N is the number of nodes)
+		1 << 4 results in 10000 (which is 16 in decimal).
+		Subtracting 1 gives 01111 (which is 15 in decimal).
+		Therefore, FINISHED_STATE = 15, or 1111 in binary, meaning that all 4 bits are set.
 
-			return; 
-		}
+		1 << n : Represents all possible bitmask states (can range from 0 to 2^n -1)
 
-		step++;
+		the "OR" "|" operand evaluates each bit in two masks, if one or both has the value 1 then it gets the value 1.
+		Take these two binery numbers, 0001 and 1000, with the "OR" operand the answer will be 1001.
 
-		// Moves in specified direction, with the exception of the direction it came from
-		for (int i = 0; i < 4; i++)
+		the "AND" "&" operand evaluates if a specific bit is 1 or not. Take these two binery numbers, 1001 and 1000, and that 
+		1001 & (1 << 3) is asked. when combined with the "AND" operand we get, 1000, showing that the bit is 1, or in the case
+		of this bitmask, the node has already been visited.
+	-------------------------------------------------------------------------------------------------**/
+
+	// Initializes the traveling salesman recuresion
+	private int dynamicProgramingSolveTSP(int N)
+	{
+		this.FINAL_STATE = (1 << N) - 1;
+		// This initializes the state to binery of only zeros (we always start at node zero)
+		int startState = 1 << 0;
+		// The dimentions of the array is N x 2^n it will contain the cost for subpaths
+		int[,] memo = new int[N, 1 << N];
+		// Contains sets of last visited nodes  (will be used to regenerate the path later) 
+		int[,] prevVisNode = new int[N, 1 << N];
+
+		// Initializes all cells to -1, -1 = not computed
+		for (int i = 0; i < N; i++)
 		{
-			// Has the cell already been visted?
-			if (this.visited[row + direction[i, 0], column + direction[i, 1]] == true)
+			for (int j = 0; j < (1 << N); j++)
 			{
-				continue;
+				memo[i, j] = -1;
 			}
-
-			string nextChar = map[row + direction[i, 0]][column + direction[i, 1]].ToString();
-
-			// Is next step outside map boundaries or a wall?
-			if ((row + direction[i, 0]) < 0		||
-				(column + direction[i, 1]) < 0	||
-				(row + direction[i, 0]) == this.matrixRows ||
-				(column + direction[i, 1] == this.matrixColumns || 
-				nextChar.Equals("#")))
-			{
-				continue;
-			}
-
-			spelunkingDFS(startNode, row + direction[i, 0], column + direction[i, 1], step);
 		}
+
+		int minTourCost = tsp(N, 0, startState, memo, prevVisNode);
+
+		//only returns minTour for the time beeing, consider regenerating path
+		return minTourCost; 
+
+	}
+
+	// Traveling Salesman Problem recursion checking each branch for shortest distance 
+	private int tsp(int N, int node, int state, int[,] memo, int[,] prevVisNode)
+	{
+		// If the final state has been reached, end recursion   
+		if (state == FINAL_STATE) return 0; 
+
+		// Return the chached answer if it has already been computed.
+		if (memo[node, state] != -1) return memo[node, state];
+
+		int minCost = int.MaxValue;
+		int index = -1;
+
+		// Loops trough all nodes, skiping already visited nodes
+		// Which has the shortest distance?
+		for (int next = 0; next < N; next++)
+		{
+			// The new state is specified, by combining the current state with the next node to be visited.
+			int nextState = state | (1 << next);
+
+			// Checks if the next:th bit (node) has been visited. (1 = visited, 0 = not) 
+			if ((state & (1 << next)) != 0) continue;
+			
+			// Visit next branch node 
+			int newCost = adjacencyMatrix[node, next] + tsp(N, next, nextState, memo, prevVisNode);
+
+			// We only keep the value of the branch with shorest distance
+			if (newCost < minCost)
+			{
+				minCost = newCost;
+				index = next;
+			}
+		}
+
+		// Registers the last visited node in series 
+		prevVisNode[node, state] = index; 
+
+		return memo[node, state] = minCost;
 	}
 }
 
