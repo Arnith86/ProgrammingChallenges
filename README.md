@@ -22,4 +22,4 @@ Original version did not solve the problem completely, this is a revised version
 ## Advent Of Code
 | Problem | Languages | Completion | :link: |
 |-|-|-|-|
-| [Air Duct Spelunking](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Air%20Duct%20Spelunking) | C# | In Progress | [To Problem](https://adventofcode.com/2016/day/24) |
+| [Air Duct Spelunking part 1](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Air%20Duct%20Spelunking) | C# | Solved | [To Problem](https://adventofcode.com/2016/day/24) |
