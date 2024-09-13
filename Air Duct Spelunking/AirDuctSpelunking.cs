@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Data.Common;
 using System.IO;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace AirDuctSpelunking;
 
@@ -40,7 +42,6 @@ public class AirDuctSpelunking
 	{
 		start();
 	}
-
 
 	// Reads the input
 	private char[][] readInput()
@@ -176,7 +177,7 @@ public class AirDuctSpelunking
 				currChar = map[row][column].ToString();
 				
 				// Regesters the shortest distance to a node from the start node
-				if (!currChar.Equals(".") && currentSteps != 0)
+				if (!currChar.Equals(".") && currentSteps != 0 && currChar != startNode.ToString())
 				{
 					Console.WriteLine("startnode " + startNode + " reached node " + currChar + " steps taken: " + currentSteps);
 					if (!mustVisitNodes[startNode].LengthToNeighbor.ContainsKey(int.Parse(currChar)))
@@ -276,7 +277,7 @@ public class AirDuctSpelunking
 		}
 
 		int minTourCost = tsp(N, 0, startState, memo, prevVisNode);
-
+		
 		//only returns minTour for the time beeing, consider regenerating path
 		return minTourCost; 
 
@@ -286,14 +287,15 @@ public class AirDuctSpelunking
 	private int tsp(int N, int node, int state, int[,] memo, int[,] prevVisNode)
 	{
 		// If the final state has been reached, end recursion   
-		if (state == FINAL_STATE) return 0; 
+		if (state == FINAL_STATE) return 0;
 
 		// Return the chached answer if it has already been computed.
 		if (memo[node, state] != -1) return memo[node, state];
 
 		int minCost = int.MaxValue;
 		int index = -1;
-
+		int nrVisitedNodesOfBranch = 0; 
+		
 		// Loops trough all nodes, skiping already visited nodes
 		// Which has the shortest distance?
 		for (int next = 0; next < N; next++)
@@ -303,10 +305,11 @@ public class AirDuctSpelunking
 
 			// Checks if the next:th bit (node) has been visited. (1 = visited, 0 = not) 
 			if ((state & (1 << next)) != 0) continue;
-			
+
+
 			// Visit next branch node 
 			int newCost = adjacencyMatrix[node, next] + tsp(N, next, nextState, memo, prevVisNode);
-
+	
 			// We only keep the value of the branch with shorest distance
 			if (newCost < minCost)
 			{
@@ -316,9 +319,10 @@ public class AirDuctSpelunking
 		}
 
 		// Registers the last visited node in series 
-		prevVisNode[node, state] = index; 
+		prevVisNode[node, state] = index;
+		memo[node, state] = minCost;
 
-		return memo[node, state] = minCost;
+		return minCost;;
 	}
 }
 
