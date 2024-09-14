@@ -21,10 +21,19 @@ public class RPGSimulator20XX
 	{
 		fillShop();
 		int[] bossStats = readBossStats();
+		
 		boss = new Character(bossStats[0], bossStats[1], bossStats[2]);
-		player = new Character(100, 2, 3);
+		player = new Character(100, 0, 0);
 
+		int finalCost = knapsackProblem();
+
+		Console.WriteLine($"The lowest cost was: {finalCost}");
+	}
+
+	private int knapsackProblem()
+	{
 		doBattle();
+		return 0; 
 	}
 
 	private bool doBattle()
@@ -34,8 +43,8 @@ public class RPGSimulator20XX
 		int bossAttacks = 0;
 		int playerAttacks = 0;
 
-		if ((bossAttacks = boss.Damage - player.Armor) < 1) bossAttacks = 1;
-		if ((playerAttacks = player.Damage - boss.Armor) < 1) playerAttacks = 1;
+		bossAttacks = Math.Max(1, boss.Damage - player.Armor);
+		playerAttacks = Math.Max(1, player.Damage - boss.Armor);
 
 		while (true)
 		{
