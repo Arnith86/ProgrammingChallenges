@@ -14,32 +14,38 @@ public class RPGSimulator20XX
 	List<Equipment> armors = new List<Equipment>();
 	List<Equipment> rings = new List<Equipment>();
 
+	Character boss;
+	Character player;
+
 	public RPGSimulator20XX() 
 	{
 		fillShop();
+		int[] bossStats = readBossStats();
+		boss = new Character(bossStats[0], bossStats[1], bossStats[2]);
+		player = new Character(100, 2, 3);
+
+		doBattle();
 	}
 
-	private void putEquipmentInList(string equipmentType, string readLine)
+	private bool doBattle()
 	{
-		// Replace multiple spaces with a single space
-		string normalizedReadLine = Regex.Replace(readLine, @"\s+", "  ");
-		string[] lineToArray = normalizedReadLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+		int bossHP = boss.HP;
+		int playerHP = player.HP;
+		int bossAttacks = 0;
+		int playerAttacks = 0;
 
-		string type = lineToArray[0];
-		int cost = int.Parse(lineToArray[1]);
-		int damage = int.Parse(lineToArray[2]);
-		int armor = int.Parse(lineToArray[3]);
+		if ((bossAttacks = boss.Damage - player.Armor) < 1) bossAttacks = 1;
+		if ((playerAttacks = player.Damage - boss.Armor) < 1) playerAttacks = 1;
 
-		switch (equipmentType)
+		while (true)
 		{
-			case "Weapon":	weapons.Add(new Equipment(type, cost, damage, armor));
-				break;
-			case "Armor":	armors.Add(new Equipment(type, cost, damage, armor));
-				break;
-			case "Ring":	rings.Add(new Equipment(type, cost, damage, armor));
-				break;
-			default:
-				break;
+			if ((bossHP -= playerAttacks) <= 0) break;
+			if ((playerHP -= bossAttacks) <= 0) break;
+		}
+
+		if (bossHP < 0)
+		{
+			return true;
 		}
 		else return false;
 	}
@@ -135,6 +141,20 @@ public class Equipment{
 		Type= type;
 		Cost= cost;
 		Damage= damage;
+		Armor= armor;
+	}
+}
+
+public class Character
+{
+	public int HP { get; set; }
+	public int Damage { get; set; }
+	public int Armor { get; set;}
+
+	public Character(int hP, int damage, int armor)
+	{
+		HP = hP;
+		Damage = damage;
 		Armor= armor;
 	}
 }
