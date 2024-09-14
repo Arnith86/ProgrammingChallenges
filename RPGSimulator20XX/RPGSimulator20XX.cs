@@ -10,9 +10,9 @@ namespace ProgrammingChallenges.RPGSimulator20XX;
 
 public class RPGSimulator20XX
 {
-	List<Weapon> weapons = new List<Weapon>();
-	List<Protection> armors = new List<Protection>();
-	List<Ring> rings = new List<Ring>();
+	List<Equipment> weapons = new List<Equipment>();
+	List<Equipment> armors = new List<Equipment>();
+	List<Equipment> rings = new List<Equipment>();
 
 	public RPGSimulator20XX() 
 	{
@@ -32,11 +32,11 @@ public class RPGSimulator20XX
 
 		switch (equipmentType)
 		{
-			case "Weapon":	weapons.Add(new Weapon(type, cost, damage, armor));
+			case "Weapon":	weapons.Add(new Equipment(type, cost, damage, armor));
 				break;
-			case "Armor":	armors.Add(new Protection(type, cost, damage, armor));
+			case "Armor":	armors.Add(new Equipment(type, cost, damage, armor));
 				break;
-			case "Ring":	rings.Add(new Ring(type, cost, damage, armor));
+			case "Ring":	rings.Add(new Equipment(type, cost, damage, armor));
 				break;
 			default:
 				break;
@@ -84,58 +84,17 @@ public class RPGSimulator20XX
 	}
 }
 
-public interface Equipment
-{
-	string Type { get; set;}
-	int Cost { get; set; }
-	int Damage { get; set; }
-	int Armor { get; set; }
-}
-
-public class Weapon : Equipment
-{
+public class Equipment{
 	public string Type { get; set; }
 	public int Cost { get; set; }
 	public int Damage { get; set; }
 	public int Armor { get; set; }
 
-	public Weapon(string type, int cost, int damage, int armor)
+	public Equipment(string type, int cost, int damage, int armor)
 	{
 		Type= type;
 		Cost= cost;
 		Damage= damage;
 		Armor= armor;
-	}
-}
-
-public class Protection : Equipment
-{
-	public string Type { get; set; }
-	public int Cost { get; set; }
-	public int Damage { get; set; }
-	public int Armor { get; set; }
-
-	public Protection(string type, int cost, int damage, int armor)
-	{
-		Type = type;
-		Cost = cost;
-		Damage = damage;
-		Armor = armor;
-	}
-}
-
-public class Ring : Equipment
-{
-	public string Type { get; set; }
-	public int Cost { get; set; }
-	public int Damage { get; set; }
-	public int Armor { get; set; }
-
-	public Ring (string type, int cost, int damage, int armor)
-	{
-		Type = type;
-		Cost = cost;
-		Damage = damage;
-		Armor = armor;
 	}
 }
