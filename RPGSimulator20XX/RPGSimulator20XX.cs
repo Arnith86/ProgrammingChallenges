@@ -8,6 +8,14 @@ using System.Threading.Tasks;
 
 namespace ProgrammingChallenges.RPGSimulator20XX;
 
+/** 
+ * To solve this problem, we utilize dynamic programming and the knapsack problem. The key idea is to avoid 
+ * evaluating each combination of equipment in battle. Instead, we evaluate each unique combination of stats 
+ * (Damage and Armor). Only a single battle is conducted for each unique instance, and the result is stored in a memo matrix. 
+ * If the same combination of stats recurs, we can retrieve the outcome, significantly reducing the number of battles.
+ **/
+
+
 public class RPGSimulator20XX
 {
 	List<Equipment> weapons = new List<Equipment>();
@@ -16,6 +24,8 @@ public class RPGSimulator20XX
 
 	Character boss;
 	Character player;
+
+	int[,] memo;  
 
 	public RPGSimulator20XX() 
 	{
@@ -32,10 +42,107 @@ public class RPGSimulator20XX
 
 	private int knapsackProblem()
 	{
-		doBattle();
-		return 0; 
+		// Find the highest possible damage and armor
+		int highestDamage = weapons.Max(x => x.Damage) + (rings.Max(x => x.Damage) * 2);
+		int highestArmor = armors.Max(x => x.Armor) + (rings.Max(x => x.Armor) * 2);
+
+		// Initializing the memo matrix
+		// -1: no memory yet, 0: lose, 1: win
+		memo = new int[highestDamage + 1, highestArmor + 1];
+
+		for (int i = 0; i < highestDamage + 1; i++)
+		{
+			for (int j = 0; j < highestArmor + 1; j++)
+			{
+				memo[i, j] = -1;
+			}
+		}
+
+		// Convert lists to array for ease of access and add option for not wearing equipments
+		Equipment[] weapon = new Equipment[weapons.Count];
+		Equipment[] armor = new Equipment[armors.Count + 1];
+		Equipment[] ring = new Equipment[rings.Count + 1];
+
+		armor[0] = new Equipment("", 0, 0, 0);
+		ring[0] = new Equipment("", 0, 0, 0);
+		
+		weapon = weapons.ToArray();
+		armors.ToArray().CopyTo(armor, 1);
+		rings.ToArray().CopyTo(ring, 1);
+		
+
+		int lowestCost = int.MaxValue;
+		int totalCost = 0; 
+
+		// Equipes every weapon, one at a time
+		for (int i = 0; i < weapon.Length; i++)
+		{
+			player.Damage = weapon[i].Damage;
+			totalCost = weapon[i].Cost;
+
+			// Equipes every armore, one at a time, staring with no armore
+			for (int j = 0; j < armor.Length; j++)
+			{
+				player.Armor = armor[j].Armor;
+				totalCost += armor[j].Cost;
+
+				// Equipes 0 to two rings 
+				for (int k = 0; k < ring.Length; k++)
+				{
+					player.Damage += ring[k].Damage;
+					player.Armor += ring[k].Armor;
+					totalCost += ring[k].Cost;
+					
+					// Single or no ring equiped
+					if (memo[player.Damage, player.Armor] == -1)
+					{
+						if (doBattle() == true) memo[player.Damage, player.Armor] = 1;
+						else memo[player.Damage, player.Armor] = 0;
+					}
+
+					if (memo[player.Damage, player.Armor] == 1) lowestCost = Math.Min(lowestCost, totalCost);
+
+					// Second ring equiped
+					foreach (Equipment secondRing in ring)
+					{
+						// Cannot wear same ring on two hands
+						if (!(ring[j] == secondRing))
+						{
+							player.Damage += secondRing.Damage;
+							player.Armor += secondRing.Armor;
+							totalCost += secondRing.Cost;
+
+							if (memo[player.Damage, player.Armor] == -1)
+							{
+								if (doBattle() == true) memo[player.Damage, player.Armor] = 1;
+								else memo[player.Damage, player.Armor] = 0;
+							}
+
+							if (memo[player.Damage, player.Armor] == 1) lowestCost = Math.Min(lowestCost, totalCost);
+
+							player.Damage -= secondRing.Damage;
+							player.Armor -= secondRing.Armor;
+							totalCost -= secondRing.Cost;
+						}
+					}
+
+					player.Damage -= ring[k].Damage;
+					player.Armor -= ring[k].Armor;
+					totalCost -= ring[k].Cost;
+				}
+
+				player.Armor -= armor[j].Armor;
+				totalCost -= armor[j].Cost;
+			}
+
+			player.Damage -= weapon[i].Damage;
+			totalCost -= weapon[i].Cost;
+		}
+
+		return lowestCost; 
 	}
 
+	// Performas a battle simulation 
 	private bool doBattle()
 	{
 		int bossHP = boss.HP;
@@ -48,15 +155,9 @@ public class RPGSimulator20XX
 
 		while (true)
 		{
-			if ((bossHP -= playerAttacks) <= 0) break;
-			if ((playerHP -= bossAttacks) <= 0) break;
+			if ((bossHP -= playerAttacks) <= 0) return true;
+			if ((playerHP -= bossAttacks) <= 0) return false;
 		}
-
-		if (bossHP < 0)
-		{
-			return true;
-		}
-		else return false;
 	}
 
 	// Fills shop with equipments found in a file.
@@ -92,15 +193,13 @@ public class RPGSimulator20XX
 	// Places equipments in its appropriate list 
 	private void putEquipmentInList(string equipmentType, string readLine)
 	{
-		// Replace multiple spaces with a single space
-		string normalizedReadLine = Regex.Replace(readLine, @"\s+", "  ");
-		string[] lineToArray = normalizedReadLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+		string[] lineToArray = readLine.Split("  ", StringSplitOptions.RemoveEmptyEntries);
 
 		string type = lineToArray[0];
 		int cost = int.Parse(lineToArray[1]);
 		int damage = int.Parse(lineToArray[2]);
 		int armor = int.Parse(lineToArray[3]);
-
+		
 		switch (equipmentType)
 		{
 			case "Weapon":
