@@ -35,12 +35,13 @@ public class RPGSimulator20XX
 		boss = new Character(bossStats[0], bossStats[1], bossStats[2]);
 		player = new Character(100, 0, 0);
 
-		int finalCost = knapsackProblem();
+		int[] finalCost = knapsackProblem();
 
-		Console.WriteLine($"The lowest cost was: {finalCost}");
+		Console.WriteLine($"The lowest cost while still winning was: {finalCost[0]} \nThe Highest cost while still losing was: {finalCost[1]}");
 	}
 
-	private int knapsackProblem()
+
+	private int[] knapsackProblem()
 	{
 		// Find the highest possible damage and armor
 		int highestDamage = weapons.Max(x => x.Damage) + (rings.Max(x => x.Damage) * 2);
@@ -72,6 +73,7 @@ public class RPGSimulator20XX
 		
 
 		int lowestCost = int.MaxValue;
+		int highestCost = int.MinValue;
 		int totalCost = 0; 
 
 		// Equipes every weapon, one at a time
@@ -100,17 +102,19 @@ public class RPGSimulator20XX
 						else memo[player.Damage, player.Armor] = 0;
 					}
 
-					if (memo[player.Damage, player.Armor] == 1) lowestCost = Math.Min(lowestCost, totalCost);
+					if (memo[player.Damage, player.Armor] == 1) lowestCost = Math.Min(lowestCost, totalCost);	// Part 1	
+					if (memo[player.Damage, player.Armor] == 0) highestCost = Math.Max(highestCost, totalCost);	// Part 2
 
 					// Second ring equiped
-					foreach (Equipment secondRing in ring)
+					//foreach (Equipment secondRing in ring)
+					for (int l = 0; l < ring.Length; l++)
 					{
 						// Cannot wear same ring on two hands
-						if (!(ring[j] == secondRing))
+						if (!(ring[k] == ring[l]))
 						{
-							player.Damage += secondRing.Damage;
-							player.Armor += secondRing.Armor;
-							totalCost += secondRing.Cost;
+							player.Damage += ring[l].Damage;
+							player.Armor += ring[l].Armor;
+							totalCost += ring[l].Cost;
 
 							if (memo[player.Damage, player.Armor] == -1)
 							{
@@ -118,11 +122,12 @@ public class RPGSimulator20XX
 								else memo[player.Damage, player.Armor] = 0;
 							}
 
-							if (memo[player.Damage, player.Armor] == 1) lowestCost = Math.Min(lowestCost, totalCost);
+							if (memo[player.Damage, player.Armor] == 1) lowestCost = Math.Min(lowestCost, totalCost);   // Part 1	
+							if (memo[player.Damage, player.Armor] == 0) highestCost = Math.Max(highestCost, totalCost); // Part 2
 
-							player.Damage -= secondRing.Damage;
-							player.Armor -= secondRing.Armor;
-							totalCost -= secondRing.Cost;
+							player.Damage -= ring[l].Damage;
+							player.Armor -= ring[l].Armor;
+							totalCost -= ring[l].Cost;
 						}
 					}
 
@@ -139,7 +144,8 @@ public class RPGSimulator20XX
 			totalCost -= weapon[i].Cost;
 		}
 
-		return lowestCost; 
+		
+		return new int[] { lowestCost, highestCost }; 
 	}
 
 	// Performas a battle simulation 
@@ -156,7 +162,8 @@ public class RPGSimulator20XX
 		while (true)
 		{
 			if ((bossHP -= playerAttacks) <= 0) return true;
-			if ((playerHP -= bossAttacks) <= 0) return false;
+			if ((playerHP -= bossAttacks) <= 0)
+			{ return false; }
 		}
 	}
 
