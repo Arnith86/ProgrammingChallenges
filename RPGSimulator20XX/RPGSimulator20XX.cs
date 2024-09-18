@@ -8,12 +8,24 @@ using System.Threading.Tasks;
 
 namespace ProgrammingChallenges.RPGSimulator20XX;
 
-/** 
- * To solve this problem, we utilize dynamic programming and the knapsack problem. The key idea is to avoid 
- * evaluating each combination of equipment in battle. Instead, we evaluate each unique combination of stats 
- * (Damage and Armor). Only a single battle is conducted for each unique instance, and the result is stored in a memo matrix. 
- * If the same combination of stats recurs, we can retrieve the outcome, significantly reducing the number of battles.
+/**
+ * To solve this problem, we use dynamic programming and a variation of the knapsack problem. 
+ * The key idea is to avoid evaluating each possible combination of equipment in battle. 
+ * Instead, we evaluate each unique combination of stats (Damage and Armor). For each unique combination, 
+ * we conduct a single battle and store the result in a memoization matrix. If the same combination of stats 
+ * recurs, we retrieve the outcome from the matrix, which significantly reduces the number of battles.
+ * 
+ * --- Part Two ---
+ * It turns out the shopkeeper is working with the boss and can persuade you to buy any items he wants. 
+ * The other rules remain the same, and he still only has one of each item. 
+ * The question is: what is the maximum amount of gold you can spend and still lose the fight?
+ * 
+ * Solving part two builds on part one. We can reuse the knapsackProblem method, but now return an array 
+ * (instead of just an integer, as in part 1). Using the same nested loops as before, we now check if the 
+ * battle simulation is lost, and if so, whether the cost is higher than the current highest losing cost. 
+ * This way, we perform both checks simultaneously.
  **/
+
 
 
 public class RPGSimulator20XX
