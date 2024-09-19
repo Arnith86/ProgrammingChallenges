@@ -25,3 +25,4 @@ Original version did not solve the problem completely, this is a revised version
 | [Air Duct Spelunking part 1](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Air%20Duct%20Spelunking) | C# | Solved | [To Problem](https://adventofcode.com/2016/day/24) |
 | [Air Duct Spelunking part 2](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Air%20Duct%20Spelunking) | C# | Solved | [To Problem](https://adventofcode.com/2016/day/24) |
 | [RPG Simulator 20XX part 1 & 2](https://github.com/Arnith86/ProgrammingChallenges/tree/main/RPGSimulator20XX) | C# | Solved | [To Problem](https://adventofcode.com/2015/day/21) | 
+| [Clumsy Crucible part 1](https://github.com/Arnith86/ProgrammingChallenges/tree/main/ClumsyCrucible) | C# | In Progress | [To Problem](https://adventofcode.com/2023/day/17) |
