@@ -19,6 +19,53 @@ public class ClumsyCrucible
 		adjacencyMatrixCreator();
 	}
 
+	// Make sure this returns an array 
+	private int adjacencyMatrixCreator()
+	{
+
+		Queue<Node> bfsQueue = new Queue<Node>();
+		bool[,] visited = new bool[NR_OF_ROWS, NR_OF_COLUMNS];
+
+		int[,] direction = new int[,]
+		{
+			{  1,  0 },  // down
+			{ -1,  0 },  // upp
+			{  0, -1 },	 // left
+			{  0,  1 }   // right
+		};
+
+		// Start position of the bfs inserted 
+		bfsQueue.Enqueue(new Node(0,0,0));
+
+		while (true)
+		{
+			if (!(bfsQueue.Count > 0)) break;
+
+			Node currNode = bfsQueue.Dequeue();
+
+			for (int i = 0; i < 4; i++)
+			{
+				int nextRow = currNode.Row + direction[i, 0];
+				int nextColumn = currNode.Column + direction[i, 1];
+
+				if (!visited[nextRow, nextColumn]) 
+				{
+					visited[nextRow, nextColumn] = true;
+					int heatReduction = heatMap[nextRow, nextColumn];
+
+					bfsQueue.Enqueue(new Node (heatReduction, nextRow, nextColumn));
+				} 
+				
+			}
+		}
+
+		return 0;  // // Make sure this returns an array 
+	}
+
+	private void bfsTraversal()
+	{
+
+	}
 	// Gets the proportion of the input matrix
 	private void getInputSize()
 	{
