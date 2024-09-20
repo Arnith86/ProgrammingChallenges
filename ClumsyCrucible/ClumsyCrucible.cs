@@ -16,6 +16,7 @@ public class ClumsyCrucible
 	public ClumsyCrucible()
 	{
 		readInput();
+		adjacencyMatrixCreator();
 	}
 
 	// Gets the proportion of the input matrix
