@@ -44,4 +44,24 @@ public class ClumsyCrucible
 		}
 	}
 }
+public class Node
+{
+	public int HeadReduction { get; set; }
+	public int Row { get; set; }
+	public int Column { get; set; }
+	public int[] StepsInDirection { get; set; }
+	public Dictionary<Node, int> costToNeighbor { get; set; }
+
+	public Node(int heatReduction, int row, int column, int[] stepsInDirection = null)
+	{
+		HeadReduction = heatReduction;
+		Row = row;
+		Column = column;
+		costToNeighbor = new Dictionary<Node, int>();
+		// Each index is a direction, 0:down, 1:upp, 2:left, 3:right 
+		// Defaults to {0,0,0,0} if no steps are provided
+		StepsInDirection = stepsInDirection ?? new int[] {0,0,0,0};
+	}
+}
+
 
