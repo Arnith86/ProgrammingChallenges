@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,11 +13,13 @@ public class ClumsyCrucible
 	int NR_OF_COLUMNS;
 
 	int[,] heatMap;  
+	const string ROW = "row";
 
 	public ClumsyCrucible()
 	{
 		readInput();
 		adjacencyMatrixCreator();
+		Console.WriteLine( dijkstrasAlgorithm());
 	}
 
 	// Make sure this returns an array 
