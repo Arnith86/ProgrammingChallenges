@@ -1,11 +1,8 @@
-﻿namespace AirDuctSpelunking;
-//namespace ProgrammingChallenges.NegativeTemprature;
+﻿namespace ProgrammingChallenges.ClumsyCrucible;
 class Program
 {
 	static void Main()
 	{
-		AirDuctSpelunking airDuctSpelunking = new AirDuctSpelunking();
-		//airDuctSpelunking;
-
+		ClumsyCrucible clumsyCrucible = new ClumsyCrucible();
 	} 
 }
