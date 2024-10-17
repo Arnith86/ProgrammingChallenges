@@ -6,10 +6,21 @@ using System.Linq.Expressions;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Diagnostics;
 
 namespace ProgrammingChallenges.ClumsyCrucible;
 
+/**
+ * Part 2: 
+ * 
+ * The crucibles of lava simply aren't large enough to provide an adequate supply of lava to the machine parts factory. 
+ * Instead, the Elves are going to upgrade to ultra crucibles. Ultra crucibles are even more difficult to steer than 
+ * normal crucibles. Not only do they have trouble going in a straight line, but they also have trouble turning!  
+ * Once an ultra crucible starts moving in a direction, it needs to move a minimum of four blocks in that direction 
+ * before it can turn (or even before it can stop at the end). However, it will eventually start to get wobbly: an ultra 
+ * crucible can move a maximum of ten consecutive blocks without turning. 
+ * 
+ */
 
 public class ClumsyCrucible
 {
@@ -21,9 +32,12 @@ public class ClumsyCrucible
 	public ClumsyCrucible()
 	{
 		readInput();
-		Console.WriteLine(dijkstrasAlgorithm());
+		
+		Console.WriteLine(dijkstrasAlgorithm(1, 3));
+		Console.WriteLine(dijkstrasAlgorithm(4, 10));
 	}
 
+	// Converts the int to only positive values
 	private int directionToPosetiveInt (int direction)
 	{
 		int positiveIntiger = 0;
@@ -43,7 +57,7 @@ public class ClumsyCrucible
 		return positiveIntiger;
 	}
 
-	private int dijkstrasAlgorithm()
+	private int dijkstrasAlgorithm(int minMoves, int maxMoves)
 	{
 		int leastHeatlossValue = 0;
 		int loopCount = 1;
@@ -52,14 +66,14 @@ public class ClumsyCrucible
 		PriorityQueue<Node, int> leastHeatLoss = new PriorityQueue<Node, int>();
 
 		// Keeps track of which nodes have already been visited.
-		bool[,,,,] visited = new bool[NR_OF_ROWS, NR_OF_COLUMNS, 3, 3, 4];
+		bool[,,,,] visited = new bool[NR_OF_ROWS, NR_OF_COLUMNS, 3, 3, maxMoves + 1 ];
 		
 		// Keeps track of the lowest heatloss accumulated to nodes and which node was the previously visited node.
 		Dictionary<Node, int> moveSequance = new Dictionary<Node, int>();
 		Dictionary<Node, Node> prevNodes = new Dictionary<Node, Node>();
 
 		
-		// Adds start node to queue
+		// Adds start nodes to queue (first move directions, down and right)
 		Node currNode = new Node(0, 0, 1, 0, 0);
 		Node firstNode1 = new Node(1, 0, 1, 0, 1);
 		Node firstNode2 = new Node(0, 1, 0, 1, 1);
@@ -82,22 +96,25 @@ public class ClumsyCrucible
 		
 		while (true)
 		{
-			Console.WriteLine($"still working: loop count {loopCount++}");
-			if (leastHeatLoss.Count > 0) currNode = leastHeatLoss.Dequeue();
+			if (leastHeatLoss.Count != 0) currNode = leastHeatLoss.Dequeue();
+			else break; 
+
+			int stepsTaken = currNode.Steps;
 
 			// Final node was found 
-			if (currNode.Row == NR_OF_ROWS - 1 && currNode.Column == NR_OF_COLUMNS - 1) 
+			if (currNode.Row == NR_OF_ROWS - 1 && currNode.Column == NR_OF_COLUMNS - 1 && stepsTaken >= minMoves)
 			{
 				leastHeatlossValue = moveSequance[currNode];
 				break;
 			}
+			
 
 			int row = currNode.Row;
 			int column = currNode.Column;
 			int heatLossToCurrNode = moveSequance[currNode];
 			int directionTakenX = currNode.DirectionX;
 			int directionTakenY = currNode.DirectionY;
-			int stepsTaken = currNode.Steps;
+			
 
 			// Checks if the node with its current state has already been visited, skips node if it has
 			if (visited[row, column, directionToPosetiveInt(directionTakenX), directionToPosetiveInt(directionTakenY), stepsTaken]) continue;
@@ -111,11 +128,11 @@ public class ClumsyCrucible
 				int nextRow = currNode.Row + tryMoveInDirX;
 				int nextColumn = currNode.Column + tryMoveInDirY;
 				int nextStepCount = 1;
+				bool sameDirection = (tryMoveInDirX == directionTakenX) && (tryMoveInDirY == directionTakenY); 
 
 				// Hinders return to previus node
 				if ((tryMoveInDirX + directionTakenX) == 0 && 
 					(tryMoveInDirY + directionTakenY) == 0) continue;
-
 
 				// Hinders movement outside of the matrix
 				if (nextRow == NR_OF_ROWS || nextColumn == NR_OF_COLUMNS || nextRow < 0 || nextColumn < 0) continue;
@@ -124,10 +141,12 @@ public class ClumsyCrucible
 				int heatLossToNextNode = heatLossToCurrNode + heatMap[nextRow, nextColumn];
 
 				// Step count gets incremented if movement continues in same direction otherwise unchanged (1)
-				if ((tryMoveInDirX == directionTakenX) && (tryMoveInDirY == directionTakenY)) nextStepCount = stepsTaken + 1;
-				
-				// Prevents further movements if three steps in the same direction has been taken
-				if (nextStepCount > 3) continue;
+				if (sameDirection)	nextStepCount = stepsTaken + 1;
+
+				// Prevents further movements in any direction exept the direction the previusly taken direction
+				if (stepsTaken < minMoves && !sameDirection) continue;
+				// Prevents further movements if max steps in the same direction has been taken
+				else if (nextStepCount > maxMoves) continue;
 				
 				Node nextNode = new Node(nextRow, nextColumn, tryMoveInDirX, tryMoveInDirY, nextStepCount);
 
@@ -146,14 +165,8 @@ public class ClumsyCrucible
 	// Gets the proportion of the input matrix
 	private void getInputSize()
 	{
-
 		StreamReader sr = new StreamReader("ClumsyCrucibleInput.txt");
 		NR_OF_ROWS = (File.ReadLines("ClumsyCrucibleInput.txt").Count());
-		//StreamReader sr = new StreamReader("ExampleInput.txt");
-		//NR_OF_ROWS = (File.ReadLines("ExampleInput.txt").Count());
-		//StreamReader sr = new StreamReader("singleSolution.txt");
-		//NR_OF_ROWS = (File.ReadLines("singleSolution.txt").Count());
-
 		NR_OF_COLUMNS = sr.ReadLine().Count();
 	}
 
@@ -162,10 +175,7 @@ public class ClumsyCrucible
 	{
 		getInputSize();
 		string[] readAll = File.ReadAllLines("ClumsyCrucibleInput.txt");
-		//string[] readAll = File.ReadAllLines("ExampleInput.txt");
-		//string[] readAll = File.ReadAllLines("singleSolution.txt");
-
-
+		
 		heatMap = new int[NR_OF_ROWS, NR_OF_COLUMNS];
 
 		for (int i = 0; i < NR_OF_ROWS; i++)
