@@ -1,8 +1,8 @@
-﻿namespace ProgrammingChallenges.ClumsyCrucible;
+﻿namespace ProgrammingChallenges.ArithmeticLogicUnit;
 class Program
 {
 	static void Main()
 	{
-		ClumsyCrucible clumsyCrucible = new ClumsyCrucible();
+		ArithmeticLogicUnit arithmeticLogicUnit = new ArithmeticLogicUnit();
 	} 
 }
