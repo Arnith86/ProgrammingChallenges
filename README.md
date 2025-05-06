@@ -1,10 +1,10 @@
-# Programmering Challenges and Problems
-My solutions to varius programming challanges and problems. 
+# Programming Challenges and Problems
+My solutions to various programming challenges and problems. 
 
 ## [Kattis](https://open.kattis.com/)
 | Problem | Languages | Completion | difficulty | :link: |
 |-|-|-|-|-|
-|  [FizzBuzz]() | C# | In Progress | Easy | [To Problem](https://open.kattis.com/problems/fizzbuzz?tab=metadata)
+|  [FizzBuzz](https://github.com/Arnith86/KattisFizzBuzz) | C# | In Progress | Easy | [To Problem](https://open.kattis.com/problems/fizzbuzz?tab=metadata)
 
 ## [ProgrammeringsOlympiaden](https://po.kattis.com/)
 | Problem | Languages | Completion | :link: |
@@ -19,7 +19,7 @@ My solutions to varius programming challanges and problems.
 | [Unique Cities](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Unique%20Cities) | C# | Solved | Easy |
 | [Annoying Coworker](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Annoying%20Coworker) | C# | Solved | Medium |
 | [Innacuret GPS](https://github.com/Arnith86/ProgrammingChallenges/tree/main/Inaccurate%20GPS) | C# | Solves example input | Medium |
-Original version did not solve the problem completely, this is a revised version. I can however not performe the test as those were time limited.
+The original version did not solve the problem completely, this is a revised version. I can, however, not perform the test as those were time-limited.
 | [Bishop Traversal](https://github.com/Arnith86/ProgrammingChallenges/tree/main/BishopTraversal) | C# | Solved | Medium |   
 | [Negative Temprature](https://github.com/Arnith86/ProgrammingChallenges/tree/main/NegativeTemprature) | C# | Solved | Easy |
 | [Bakers Percentage](https://github.com/Arnith86/ProgrammingChallenges/tree/main/BakersPercentage) | C# | Solved | Medium |
