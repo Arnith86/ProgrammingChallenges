@@ -4,7 +4,7 @@ My solutions to various programming challenges and problems.
 ## [Kattis](https://open.kattis.com/)
 | Problem | Languages | Completion | difficulty | :link: |
 |-|-|-|-|-|
-|  [FizzBuzz](https://github.com/Arnith86/KattisFizzBuzz) | C# | In Progress | Easy | [To Problem](https://open.kattis.com/problems/fizzbuzz?tab=metadata)
+|  [FizzBuzz](https://github.com/Arnith86/KattisFizzBuzz) | C# | Solved | Easy | [To Problem](https://open.kattis.com/problems/fizzbuzz?tab=metadata)
 
 ## [ProgrammeringsOlympiaden](https://po.kattis.com/)
 | Problem | Languages | Completion | :link: |
