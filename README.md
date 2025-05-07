@@ -5,6 +5,12 @@ My solutions to various programming challenges and problems.
 | Problem | Languages | Completion | difficulty | :link: |
 |-|-|-|-|-|
 |  [FizzBuzz](https://github.com/Arnith86/KattisFizzBuzz) | C# | Solved | Easy | [To Problem](https://open.kattis.com/problems/fizzbuzz?tab=metadata)
+|  [A Vicious Pikeman (Easy)](https://github.com/Arnith86/KattisFizzBuzz) | C# | Solved | Medium | [To Problem](https://open.kattis.com/problems/pikemanhard?editresubmit=17349055)
+|  [Dyslectionary](https://github.com/Arnith86/KattisDyslectionary) | C# | In Progress | Medium | [To Problem](https://open.kattis.com/problems/dyslectionary?tab=metadata)
+
+
+
+## [ProgrammeringsOlympiaden](https
 
 ## [ProgrammeringsOlympiaden](https://po.kattis.com/)
 | Problem | Languages | Completion | :link: |
