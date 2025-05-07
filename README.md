@@ -9,9 +9,6 @@ My solutions to various programming challenges and problems.
 |  [Dyslectionary](https://github.com/Arnith86/KattisDyslectionary) | C# | In Progress | Medium | [To Problem](https://open.kattis.com/problems/dyslectionary?tab=metadata)
 
 
-
-## [ProgrammeringsOlympiaden](https
-
 ## [ProgrammeringsOlympiaden](https://po.kattis.com/)
 | Problem | Languages | Completion | :link: |
 |-|-|-|-|
