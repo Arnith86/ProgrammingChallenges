@@ -4,7 +4,7 @@ My solutions to various programming challenges and problems.
 ## [Kattis](https://open.kattis.com/)
 | Problem | Languages | Completion | difficulty | :link: |
 |-|-|-|-|-|
-|  [Dyslectionary](https://github.com/Arnith86/KattisDyslectionary) | C# | In Progress | Medium | [To Problem](https://open.kattis.com/problems/dyslectionary?tab=metadata)
+|  [Dyslectionary](https://github.com/Arnith86/KattisDyslectionary) | C# | Solved | Medium | [To Problem](https://open.kattis.com/problems/dyslectionary?tab=metadata)
 |  [A Vicious Pikeman (Easy)](https://github.com/Arnith86/KattisFizzBuzz) | C# | Solved | Medium | [To Problem](https://open.kattis.com/problems/pikemanhard?editresubmit=17349055)
 |  [FizzBuzz](https://github.com/Arnith86/KattisFizzBuzz) | C# | Solved | Easy | [To Problem](https://open.kattis.com/problems/fizzbuzz?tab=metadata)
 
